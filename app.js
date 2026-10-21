@@ -281,7 +281,8 @@
       '<p class="small">' + L('本应用使用开源免费的 lunar-javascript 排盘引擎，完全在手机上运算。你也可以把出生资料复制到其他免费排盘网站对照。',
         'This app runs the free, open-source lunar-javascript engine right on your phone. You can also copy your details into another free calculator to compare.') + '</p>' +
       '<div class="btns"><button class="btn" data-act="copy">' + L('复制命盘', 'Copy my chart') + '</button>' +
-      '<a class="btn" href="https://www.yourchineseastrology.com/calculator/bazi/" target="_blank" rel="noopener">' + L('免费八字计算器 ↗', 'Free BaZi calculator ↗') + '</a>' +
+      '<a class="btn" href="https://www.masterseanchan.com/bazi-calculator/" target="_blank" rel="noopener">' + L('免费八字计算器 ↗', 'Free BaZi calculator ↗') + '</a>' +
+      '<a class="btn" href="https://www.google.com/search?q=free+bazi+calculator+four+pillars" target="_blank" rel="noopener">' + L('更多免费排盘 ↗', 'Find more calculators ↗') + '</a>' +
       '<a class="btn" href="https://github.com/6tail/lunar-javascript" target="_blank" rel="noopener">' + L('排盘引擎 ↗', 'Engine source ↗') + '</a></div></div>';
     return h;
   }
