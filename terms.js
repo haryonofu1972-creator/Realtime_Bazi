@@ -118,6 +118,55 @@ var TERMS = {
     'DONG_ZHI':'Winter Solstice','XIAO_HAN':'Minor Cold','DA_HAN':'Major Cold','LI_CHUN':'Start of Spring',
     'YU_SHUI':'Rain Water','JING_ZHE':'Awakening of Insects'
   },
+
+  stem: { '甲':'Yang Wood','乙':'Yin Wood','丙':'Yang Fire','丁':'Yin Fire','戊':'Yang Earth','己':'Yin Earth',
+    '庚':'Yang Metal','辛':'Yin Metal','壬':'Yang Water','癸':'Yin Water' },
+  branch: { '子':'Rat','丑':'Ox','寅':'Tiger','卯':'Rabbit','辰':'Dragon','巳':'Snake','午':'Horse','未':'Goat',
+    '申':'Monkey','酉':'Rooster','戌':'Dog','亥':'Pig' },
+  nayin: {
+    '海中金':'Sea Metal','沙中金':'Sand Metal','炉中火':'Furnace Fire','山下火':'Fire below the Mountain','大林木':'Forest Wood',
+    '平地木':'Flatland Wood','路旁土':'Roadside Earth','壁上土':'Wall Earth','剑锋金':'Sword Metal','金箔金':'Gold Leaf Metal',
+    '山头火':'Mountain-top Fire','覆灯火':'Lamp Fire','涧下水':'Brook Water','天河水':'Heavenly River Water','城头土':'City-wall Earth',
+    '大驿土':'Highway Earth','白蜡金':'White Wax Metal','钗钏金':'Jewellery Metal','杨柳木':'Willow Wood','桑柘木':'Mulberry Wood',
+    '泉中水':'Spring Water','大溪水':'Great Stream Water','屋上土':'Rooftop Earth','沙中土':'Sand Earth','霹雳火':'Thunderbolt Fire',
+    '天上火':'Sky Fire','松柏木':'Pine & Cypress Wood','石榴木':'Pomegranate Wood','长流水':'Long River Water','大海水':'Ocean Water'
+  },
+  xiu: {
+    '角':'Horn','亢':'Neck','氐':'Root','房':'Room','心':'Heart','尾':'Tail','箕':'Winnowing Basket','斗':'Dipper','牛':'Ox',
+    '女':'Girl','虚':'Emptiness','危':'Rooftop','室':'Encampment','壁':'Wall','奎':'Legs','娄':'Bond','胃':'Stomach',
+    '昴':'Hairy Head','毕':'Net','觜':'Turtle Beak','参':'Three Stars','井':'Well','鬼':'Ghost','柳':'Willow','星':'Star',
+    '张':'Extended Net','翼':'Wings','轸':'Chariot'
+  },
+  xiuZheng: { '木':'Wood','金':'Metal','土':'Earth','日':'Sun','月':'Moon','火':'Fire','水':'Water' },
+  xiuAnimal: {
+    '蛟':'Flood Dragon','龙':'Dragon','貉':'Badger','兔':'Rabbit','狐':'Fox','虎':'Tiger','豹':'Leopard','獬':'Unicorn','牛':'Ox',
+    '蝠':'Bat','鼠':'Rat','燕':'Swallow','猪':'Pig','貐':'Porcupine','狼':'Wolf','狗':'Dog','雉':'Pheasant','鸡':'Rooster',
+    '乌':'Crow','猴':'Monkey','猿':'Ape','犴':'Wild Dog','羊':'Goat','獐':'Muntjac','马':'Horse','鹿':'Deer','蛇':'Snake','蚓':'Earthworm'
+  },
+  pengzu: {
+    '甲不开仓财物耗散':'Jia days: don’t open the storehouse, or wealth drains away',
+    '乙不栽植千株不长':'Yi days: don’t plant, or nothing will grow',
+    '丙不修灶必见灾殃':'Bing days: don’t repair the stove, or trouble follows',
+    '丁不剃头头必生疮':'Ding days: don’t shave the head, or sores appear',
+    '戊不受田田主不祥':'Wu days: don’t take on land, or the owner has bad luck',
+    '己不破券二比并亡':'Ji days: don’t break contracts, or both sides lose',
+    '庚不经络织机虚张':'Geng days: don’t weave, or the loom runs idle',
+    '辛不合酱主人不尝':'Xin days: don’t make sauce, or the host won’t taste it',
+    '壬不泱水更难提防':'Ren days: don’t release water, or floods are hard to stop',
+    '癸不词讼理弱敌强':'Gui days: don’t sue, or the other side prevails',
+    '子不问卜自惹祸殃':'Rat days: don’t consult fortune-tellers, or you invite trouble',
+    '丑不冠带主不还乡':'Ox days: don’t hold coming-of-age rites, or the person won’t return home',
+    '寅不祭祀神鬼不尝':'Tiger days: don’t make offerings, or the spirits won’t accept them',
+    '卯不穿井水泉不香':'Rabbit days: don’t dig wells, or the water won’t be sweet',
+    '辰不哭泣必主重丧':'Dragon days: don’t weep, or mourning repeats',
+    '巳不远行财物伏藏':'Snake days: don’t travel far, or your wealth stays hidden',
+    '午不苫盖屋主更张':'Horse days: don’t thatch the roof, or the household changes owner',
+    '未不服药毒气入肠':'Goat days: traditionally no medicine (always follow your doctor)',
+    '申不安床鬼祟入房':'Monkey days: don’t set up a bed, or spirits enter the room',
+    '酉不会客醉坐颠狂':'Rooster days: don’t host guests, or drinking gets out of hand',
+    '戌不吃犬作怪上床':'Dog days: don’t eat dog meat, or strange things happen',
+    '亥不嫁娶不利新郎':'Pig days: don’t marry, or it is unlucky for the groom'
+  },
   week: ['日','一','二','三','四','五','六'],
   weekEn: ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 };

@@ -136,6 +136,7 @@
       dmEl: dmEl, weights: w, total: total, ratio: ratio, strong: strong, fav: fav, unfav: unfav,
       luck: luck, yunStart: { y: yun.getStartYear(), m: yun.getStartMonth(), d: yun.getStartDay() },
       lunarBirth: birthLunar.getYearInGanZhi() + '年 ' + birthLunar.getMonthInChinese() + '月' + birthLunar.getDayInChinese(),
+      lunarBirthParts: { gz: birthLunar.getYearInGanZhi(), month: birthLunar.getMonth(), day: birthLunar.getDay() },
       trace: {
         clock: p.date + ' ' + (p.unknownTime ? '12:00' : p.time), offset: offset, utc: fmtMs(utc),
         lonCorr: lonCorr, eot: eot, tst: fmtMs(tstMs), bj: fmtMs(bjMs), unknownTime: !!p.unknownTime
@@ -146,6 +147,8 @@
   /* ---------- personal scoring ---------- */
 
   // gan/zhi: the period's stem & branch; type: '黄道'|'黑道'; extra: [[zh, en, delta]]
+  function zn(z) { return z + ' (' + ANIMAL_EN[ZHI_ANIMAL[z]] + ')'; }
+
   function scorePeriod(gan, zhi, type, chart, extra) {
     var s = 60, why = [];
     function add(d, zh, en) { s += d; why.push([zh, en, d]); }
@@ -156,13 +159,13 @@
       var ge = GAN_EL[gan], ze = ZHI_EL[zhi];
       if (chart.fav.indexOf(ge) >= 0) add(10, '天干' + gan + '属' + ge + '，为你的喜用', 'Stem ' + gan + ' carries ' + EL_EN[ge] + ', a helpful element for you');
       else if (chart.unfav.indexOf(ge) >= 0) add(-7, '天干' + gan + '属' + ge + '，非你所喜', 'Stem ' + gan + ' carries ' + EL_EN[ge] + ', a less helpful element for you');
-      if (chart.fav.indexOf(ze) >= 0) add(7, '地支' + zhi + '属' + ze + '，助你', 'Branch ' + zhi + ' carries ' + EL_EN[ze] + ', which supports you');
-      else if (chart.unfav.indexOf(ze) >= 0) add(-5, '地支' + zhi + '属' + ze + '，耗你', 'Branch ' + zhi + ' carries ' + EL_EN[ze] + ', which drains you');
+      if (chart.fav.indexOf(ze) >= 0) add(7, '地支' + zhi + '属' + ze + '，助你', 'Branch ' + zn(zhi) + ' carries ' + EL_EN[ze] + ', which supports you');
+      else if (chart.unfav.indexOf(ze) >= 0) add(-5, '地支' + zhi + '属' + ze + '，耗你', 'Branch ' + zn(zhi) + ' carries ' + EL_EN[ze] + ', which drains you');
       var dz = chart.dayZhi, yz = chart.yearZhi;
-      if (CHONG[zhi] === dz) add(-15, zhi + '冲你的日支' + dz, zhi + ' clashes with your Day Branch ' + dz);
-      else if (HE[zhi] === dz) add(8, zhi + '与你的日支' + dz + '六合', zhi + ' forms a Six Harmony with your Day Branch ' + dz);
-      else if (sanhe(zhi, dz)) add(5, zhi + '与你的日支' + dz + '三合', zhi + ' is in Three Harmony with your Day Branch ' + dz);
-      else if (HAI[zhi] === dz) add(-4, zhi + '与你的日支' + dz + '相害', zhi + ' harms your Day Branch ' + dz);
+      if (CHONG[zhi] === dz) add(-15, zhi + '冲你的日支' + dz, zn(zhi) + ' clashes with your Day Branch ' + zn(dz));
+      else if (HE[zhi] === dz) add(8, zhi + '与你的日支' + dz + '六合', zn(zhi) + ' forms a Six Harmony with your Day Branch ' + zn(dz));
+      else if (sanhe(zhi, dz)) add(5, zhi + '与你的日支' + dz + '三合', zn(zhi) + ' is in Three Harmony with your Day Branch ' + zn(dz));
+      else if (HAI[zhi] === dz) add(-4, zhi + '与你的日支' + dz + '相害', zn(zhi) + ' harms your Day Branch ' + zn(dz));
       if (CHONG[zhi] === yz && yz !== dz) add(-6, '冲你的生肖（' + ZHI_ANIMAL[yz] + '）', 'Clashes with your zodiac sign (' + ANIMAL_EN[ZHI_ANIMAL[yz]] + ')');
     }
     s = Math.max(5, Math.min(98, s));

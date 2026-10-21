@@ -26,6 +26,9 @@
     return '<span class="cn">' + esc(zh) + '</span>' + (en ? '<span class="en gloss">' + esc(en) + '</span>' : '');
   }
   function el(e) { return '<span class="el el-' + T.element[e] + '">' + e + '<span class="en"> ' + T.element[e] + '</span></span>'; }
+  // 甲寅 -> "Wood Tiger" (stem and branch always share yin/yang, so element + animal is unambiguous)
+  function gzEn(gz) { return T.element[E.GAN_EL[gz[0]]] + ' ' + T.branch[gz[1]]; }
+  function gzGloss(gz) { return '<span class="cn">' + gz + '</span><span class="en gloss">' + gzEn(gz) + '</span>'; }
   function z(n) { return (n < 10 ? '0' : '') + n; }
   function ymd(d) { return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate() }; }
   function todayYmd() { return ymd(new Date()); }
@@ -102,7 +105,8 @@
     var h = dateBar();
     h += '<div class="card hero"><div class="lunar">' + lunarDate(lu) + '</div>' +
       '<div class="gz cn">' + lu.getYearInGanZhi() + '年 ' + lu.getMonthInGanZhi() + '月 ' + lu.getDayInGanZhi() + '日</div>' +
-      '<div class="sub">' + L(lu.getYearShengXiao() + '年 · 纳音' + lu.getDayNaYin(), 'Year of the ' + T.animal[lu.getYearShengXiao()] + ' · Day element sound: ' + lu.getDayNaYin()) +
+      '<div class="en gz-en">' + gzEn(lu.getYearInGanZhi()) + ' year · ' + gzEn(lu.getMonthInGanZhi()) + ' month · ' + gzEn(lu.getDayInGanZhi()) + ' day</div>' +
+      '<div class="sub">' + L(lu.getYearShengXiao() + '年 · 纳音' + lu.getDayNaYin(), 'Year of the ' + T.animal[lu.getYearShengXiao()] + ' · Day sound element: ' + T.nayin[lu.getDayNaYin()]) +
       (jq ? ' · <b>' + termCn(jq, 'jieQi') + '</b>' : '') + '</div></div>';
 
     if (c) {
@@ -119,7 +123,7 @@
       if (i >= 0) {
         var t = r.times[i];
         h += '<div class="card now"><div class="card-h">' + L('当前时辰', 'Right now') + ' <span class="muted">' + t.start + '–' + t.end + '</span></div>' +
-          '<div class="now-row"><div><div class="big cn">' + t.gan + t.zhi + '</div>' + shichenName(t, i) + '</div>' +
+          '<div class="now-row"><div><div class="big cn">' + t.gan + t.zhi + '</div><div class="en small">' + gzEn(t.gan + t.zhi) + '</div>' + shichenName(t, i) + '</div>' +
           (c ? scoreBadge(t.score) : '<span class="badge ' + (t.t.getTianShenLuck() === '吉' ? 'tier4' : 'tier2') + '">' + termCn(t.t.getTianShen(), 'tianShen') + '</span>') + '</div>' +
           '<div class="mini">' + L('财神', 'Wealth') + ' ' + arrow(t.t.getPositionCaiDesc()) + term(t.t.getPositionCaiDesc(), 'dir') +
           ' · ' + L('喜神', 'Joy') + ' ' + arrow(t.t.getPositionXiDesc()) + term(t.t.getPositionXiDesc(), 'dir') + '</div>' +
@@ -142,8 +146,10 @@
         'Clashes with ' + T.animal[lu.getDayChongShengXiao()] + ' · Sha in the ' + T.dir[lu.getDaySha()]) + '</dd>' +
       '<dt>' + L('值神', 'Day spirit') + '</dt><dd>' + termCn(ts, 'tianShen') + ' <span class="muted">' + L(lu.getDayTianShenType(), lu.getDayTianShenType() === '黄道' ? 'Yellow Path · auspicious' : 'Black Path · inauspicious') + '</span></dd>' +
       '<dt>' + L('建除', 'Day officer') + '</dt><dd>' + termCn(lu.getZhiXing(), 'zhiXing') + '</dd>' +
-      '<dt>' + L('星宿', 'Lunar mansion') + '</dt><dd class="cn">' + lu.getXiu() + lu.getZheng() + lu.getAnimal() + ' · ' + lu.getXiuLuck() + '</dd>' +
-      '<dt>' + L('彭祖百忌', 'Pengzu taboos') + '</dt><dd class="cn">' + lu.getPengZuGan() + ' ' + lu.getPengZuZhi() + '</dd>' +
+      '<dt>' + L('星宿', 'Lunar mansion') + '</dt><dd>' + L(lu.getXiu() + lu.getZheng() + lu.getAnimal() + ' · ' + lu.getXiuLuck(),
+        T.xiu[lu.getXiu()] + ' mansion (' + T.xiuZheng[lu.getZheng()] + ', ' + T.xiuAnimal[lu.getAnimal()] + ') · ' + (lu.getXiuLuck() === '吉' ? 'lucky' : 'unlucky')) + '</dd>' +
+      '<dt>' + L('彭祖百忌', 'Pengzu taboos') + '</dt><dd>' + L(lu.getPengZuGan() + ' ' + lu.getPengZuZhi(),
+        T.pengzu[lu.getPengZuGan()] + '. ' + T.pengzu[lu.getPengZuZhi()] + '.') + '</dd>' +
       '</dl><div class="card-h small">' + L('吉神宜趋', 'Lucky stars') + '</div><div class="chips">' + chips(lu.getDayJiShen(), 'shenSha', 'yi') + '</div>' +
       '<div class="card-h small">' + L('凶煞宜忌', 'Unlucky stars') + '</div><div class="chips">' + chips(lu.getDayXiongSha(), 'shenSha', 'ji') + '</div></div>';
 
@@ -171,7 +177,7 @@
       var lt = t.t, luck = lt.getTianShenLuck() === '吉';
       h += '<details class="card hour ' + (i === cur ? 'current' : '') + '"' + (i === cur ? ' open id="curHour"' : '') + '>' +
         '<summary><div class="h-time">' + t.start + '<br><span class="muted">' + t.end + '</span></div>' +
-        '<div class="h-main"><div><b class="cn">' + t.gan + t.zhi + '</b> ' + shichenName(t, i) + '</div>' +
+        '<div class="h-main"><div><b>' + gzGloss(t.gan + t.zhi) + '</b> ' + shichenName(t, i) + '</div>' +
         '<div class="small muted">' + termCn(lt.getTianShen(), 'tianShen') + ' · ' + L(luck ? '吉' : '凶', luck ? 'lucky' : 'unlucky') +
         (c ? ' · ' + termCn(t.god, 'shiShen') : '') + '</div>' +
         (c ? '<div class="bar ' + tierClass(t.score.tier) + '"><i style="width:' + t.score.score + '%"></i></div>' : '') + '</div>' +
@@ -199,15 +205,17 @@
     for (var d = 1; d <= days; d++) {
       var r = E.dayReading(o.y, o.m, d, c), lu = r.lunar, jq = lu.getJieQi();
       var sub = jq || (lu.getDay() === 1 ? lu.getMonthInChinese() + '月' : lu.getDayInChinese());
+      var subEn = jq ? T.jieQi[jq] : (lu.getDay() === 1 ? 'LM' + Math.abs(lu.getMonth()) : 'L' + lu.getDay());
       var sel = d === o.d ? ' sel' : '', td = isToday({ y: o.y, m: o.m, d: d }) ? ' is-today' : '';
       h += '<button class="cell ' + tierClass(r.score.tier) + sel + td + '" data-go="' + o.y + '-' + o.m + '-' + d + '">' +
-        '<b>' + d + '</b><span class="cn tiny">' + sub + '</span>' +
+        '<b>' + d + '</b><span class="zh tiny">' + sub + '</span><span class="en tiny">' + subEn + '</span>' +
         '<span class="tiny">' + (c ? r.score.score : (lu.getDayTianShenType() === '黄道' ? '●' : '○')) + '</span></button>';
     }
     h += '</div><div class="legend">' + [5, 4, 3, 2, 1].map(function (k) {
       var t = { 5: ['大吉', 'Excellent'], 4: ['吉', 'Good'], 3: ['平', 'Fair'], 2: ['小心', 'Take care'], 1: ['凶', 'Challenging'] }[k];
       return '<span class="tier' + k + '"><i></i>' + L(t[0], t[1]) + '</span>';
     }).join('') + '</div>' +
+      '<p class="note en">L12 = 12th day of the lunar month · LM10 = first day of lunar month 10</p>' +
       (c ? '' : '<p class="note">' + L('● 黄道日 ○ 黑道日。设定命盘后显示个人分数。', '● Yellow Path day ○ Black Path day. Set up your chart to see personal scores.') + '</p>') +
       '</div>';
     return h;
@@ -222,13 +230,14 @@
       h += '<div class="pillar' + (i === 2 ? ' dm' : '') + '"><div class="small muted">' + L(labels[i][0], labels[i][1]) + '</div>';
       if (!pl) { h += '<div class="unknown">?</div><div class="tiny muted">' + L('时辰不详', 'Hour unknown') + '</div></div>'; return; }
       h += '<div class="tiny god">' + termCn(pl.ganGod, 'shiShen') + '</div>' +
-        '<div class="char el-' + T.element[pl.ganEl] + '">' + pl.gan + '</div>' +
-        '<div class="char el-' + T.element[pl.zhiEl] + '">' + pl.zhi + '</div>' +
+        '<div class="char el-' + T.element[pl.ganEl] + '">' + pl.gan + '</div><div class="en pen">' + T.stem[pl.gan] + '</div>' +
+        '<div class="char el-' + T.element[pl.zhiEl] + '">' + pl.zhi + '</div><div class="en pen">' + T.branch[pl.zhi] + '</div>' +
         '<div class="hide">' + pl.hide.map(function (x) { return '<span class="el-' + T.element[x.el] + '">' + x.gan + '</span>'; }).join('') + '</div>' +
-        '<div class="tiny muted cn">' + pl.nayin + '</div></div>';
+        '<div class="en pen muted">Hidden: ' + pl.hide.map(function (x) { return T.stem[x.gan]; }).join(', ') + '</div>' +
+        '<div class="tiny muted cn">' + pl.nayin + '</div><div class="en pen muted">' + T.nayin[pl.nayin] + '</div></div>';
     });
     h += '</div><p class="small">' + L('日主', 'Day Master') + ': <b>' + c.dayGan + '</b> ' + el(c.dmEl) +
-      ' · ' + L('生肖', 'Zodiac') + ': ' + term(c.animal, 'animal') + ' · ' + L('农历生日', 'Lunar birthday') + ': <span class="cn">' + c.lunarBirth + '</span></p></div>';
+      ' · ' + L('生肖', 'Zodiac') + ': ' + term(c.animal, 'animal') + ' · ' + L('农历生日', 'Lunar birthday') + ': ' + L(c.lunarBirth, lunarBirthEn(c.lunarBirthParts)) + '</p></div>';
 
     // elements
     h += '<div class="card"><div class="card-h">' + L('五行力量', 'Five Elements balance') + '</div>';
@@ -250,6 +259,7 @@
       var nxt = c.luck[i + 1], cur = yr >= d.year && (!nxt || yr < nxt.year);
       h += '<div class="lp' + (cur ? ' cur' : '') + '"><div class="tiny muted">' + d.age + L('岁', ' yrs') + '</div>' +
         '<div class="cn el-' + T.element[d.ganEl] + '">' + d.gz[0] + '</div><div class="cn el-' + T.element[d.zhiEl] + '">' + d.gz[1] + '</div>' +
+        '<div class="en tiny">' + gzEn(d.gz) + '</div>' +
         '<div class="tiny">' + d.year + '</div></div>';
     });
     h += '</div></div>';
@@ -276,6 +286,10 @@
     return h;
   }
 
+  function lunarBirthEn(b) {
+    if (!b) return '';
+    return 'year ' + b.gz + ' (' + gzEn(b.gz) + '), ' + (b.month < 0 ? 'leap ' : '') + 'month ' + Math.abs(b.month) + ', day ' + b.day;
+  }
   function fmtMin(m) { var s = m < 0 ? '−' : '+'; m = Math.abs(m); return s + Math.floor(m / 60) + 'h ' + z(Math.round(m % 60)) + 'm'; }
   function placeName(pl) { return pl ? [pl.zh, pl.en, pl.country].filter(Boolean).join(' · ') : ''; }
 
@@ -446,6 +460,7 @@
   function copyChart() {
     var c = S.chart, p = S.profile;
     var txt = '八字 BaZi: ' + c.pillars.map(function (x) { return x ? x.gz : '??'; }).join(' ') +
+      '\n(' + c.pillars.map(function (x) { return x ? gzEn(x.gz) : '?'; }).join(' · ') + ')' +
       '\n出生 Born: ' + c.trace.clock + ' @ ' + placeName(p.place) + ' (' + p.place.lat + ', ' + p.place.lon + ', ' + p.place.tz + ')' +
       '\n真太阳时 True solar time: ' + c.trace.tst +
       '\n日主 Day Master: ' + c.dayGan + ' ' + c.dmEl + ' · 喜用 Helpful: ' + c.fav.join('') +
