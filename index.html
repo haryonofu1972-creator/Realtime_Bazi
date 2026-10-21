@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>八字通胜 · BaZi Almanac</title>
+<meta name="description" content="个人八字通胜：每日及每个时辰的宜忌、吉凶与方位，中英双语。A personal BaZi almanac with daily and two-hour readings in Chinese and English.">
+<meta name="theme-color" content="#0F6A63">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="八字通胜">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+  :root{
+    --paper:#F7F6F2; --card:#FFFDFA; --ink:#1C1A17; --muted:#6A645E; --faint:#98928A;
+    --teal:#0F6A63; --teal-deep:#0A4B46; --teal-tint:#E9F2F0;
+    --zhu:#B23B2E; --zhu-tint:#FAEDE9; --gold:#A9762B; --rule:#DCD7CD; --hair:#EBE7DF;
+    --t5:#0F6A63; --t4:#4C9A6A; --t3:#A9762B; --t2:#C7702E; --t1:#B23B2E;
+    --wood:#3E7C4A; --fire:#C2412D; --earth:#9A6A22; --metal:#7C828C; --water:#2D5B8A;
+    --cn:'Songti SC','Noto Serif SC','SimSun',serif;
+    --ui:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'PingFang SC','Noto Sans SC',sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --paper:#161514; --card:#201F1D; --ink:#EDEAE4; --muted:#A8A199; --faint:#7D776F;
+      --teal:#4FB3A8; --teal-deep:#7FD0C6; --teal-tint:#1D302D; --zhu:#E0705F; --zhu-tint:#3A2320;
+      --gold:#D4A35A; --rule:#3A3733; --hair:#2C2A27;
+      --t5:#4FB3A8; --t4:#78C08F; --t3:#D4A35A; --t2:#E08E4E; --t1:#E0705F;
+      --wood:#7DBB87; --fire:#E7735F; --earth:#D0A057; --metal:#B3B9C2; --water:#7EA9D6; }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--paper)}
+  body{font-family:var(--ui);color:var(--ink);-webkit-text-size-adjust:100%;line-height:1.55;font-size:15px}
+  button,input,select{font:inherit;color:inherit}
+  a{color:var(--teal)}
+  .cn,.zh{font-family:var(--cn)}
+  /* language modes */
+  body.lang-zh .en{display:none}
+  body.lang-en .zh{display:none}
+  body.lang-both .zh + .en{margin-left:.4em;color:var(--muted);font-size:.88em}
+  body.lang-en .en.gloss{margin-left:.35em}
+  body.lang-zh .en.gloss{display:none}
+  body.lang-both .en.gloss{margin-left:.35em;color:var(--muted);font-size:.88em}
+
+  header{position:sticky;top:0;z-index:5;background:var(--teal-deep);color:#fff;
+    padding:calc(env(safe-area-inset-top) + 10px) 16px 10px;display:flex;align-items:center;gap:10px}
+  @media (prefers-color-scheme: dark){ header{background:#0B2E2B} }
+  header h1{font-family:var(--cn);font-size:19px;margin:0;font-weight:600;letter-spacing:.06em;flex:1}
+  header h1 small{font-family:var(--ui);font-weight:400;font-size:12px;opacity:.75;letter-spacing:0;margin-left:6px}
+  #langBtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:16px;padding:3px 12px;font-size:13px}
+  main{max-width:560px;margin:0 auto;padding:12px 16px calc(84px + env(safe-area-inset-bottom))}
+
+  .card{background:var(--card);border:1px solid var(--rule);border-radius:14px;padding:14px;margin:0 0 12px}
+  .card-h{font-weight:600;margin:0 0 8px;color:var(--teal-deep)}
+  .card-h.ok{color:var(--teal)} .card-h.bad{color:var(--zhu)}
+  .card-h.small{font-size:13px;margin-top:10px}
+  .muted{color:var(--muted)} .small{font-size:13px} .tiny{font-size:11px}
+  .bad{color:var(--zhu)}
+  .note{font-size:12.5px;color:var(--muted);margin:6px 0}
+
+  .datebar{display:flex;align-items:center;gap:8px;margin:0 0 12px}
+  .nav{width:40px;height:40px;border-radius:50%;border:1px solid var(--rule);background:var(--card);font-size:22px;line-height:1;flex:none}
+  .datepick{flex:1;position:relative;text-align:center;font-weight:600;padding:8px 4px;border-radius:10px;background:var(--teal-tint)}
+  .datepick input{position:absolute;inset:0;opacity:0;width:100%;height:100%}
+  body.lang-both .datepick .en{display:block;margin:0}
+  .today-btn{border:0;background:var(--teal);color:#fff;border-radius:16px;padding:6px 12px;font-size:13px;flex:none}
+
+  .hero{text-align:center;background:linear-gradient(180deg,var(--teal-tint),var(--card))}
+  .hero .gz{font-size:24px;letter-spacing:.12em;margin:4px 0;color:var(--teal-deep)}
+  .hero .sub{font-size:13px;color:var(--muted)}
+  body.lang-both .hero .lunar .en{display:block;margin:0}
+
+  .score-card{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+  .ring{--c:var(--t3);width:84px;height:84px;border-radius:50%;display:grid;place-items:center;
+    background:conic-gradient(var(--c) calc(var(--p)*1%),var(--hair) 0)}
+  .ring b{width:66px;height:66px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:26px}
+  .tier5 .ring,.tier5.ring{--c:var(--t5)} .tier4 .ring{--c:var(--t4)} .tier3 .ring{--c:var(--t3)} .tier2 .ring{--c:var(--t2)} .tier1 .ring{--c:var(--t1)}
+  .score-txt .label{font-size:13px;color:var(--muted)}
+  .tier-name{font-size:22px;font-weight:700;font-family:var(--cn)}
+  .theme{font-size:14px;margin-top:4px}
+  body.lang-both .theme .en{display:block;margin:2px 0 0}
+  .tag{display:inline-block;background:var(--teal-tint);color:var(--teal-deep);border-radius:6px;padding:0 6px;font-size:12px}
+  .whybox{grid-column:1/-1;font-size:13px}
+  .whybox summary{cursor:pointer;color:var(--teal)}
+  .why{margin:6px 0 0;padding:0;list-style:none}
+  .why li{padding:3px 0;border-top:1px dashed var(--hair)}
+  .why b{display:inline-block;min-width:32px}
+  .why .up{color:var(--t5)} .why .down{color:var(--t1)}
+  body.lang-both .why .en{display:block;margin:0 0 0 36px}
+
+  .badge{display:inline-block;border-radius:14px;padding:3px 10px;font-size:13px;color:#fff;background:var(--t3);white-space:nowrap}
+  .badge.tier5{background:var(--t5)} .badge.tier4{background:var(--t4)} .badge.tier2{background:var(--t2)} .badge.tier1{background:var(--t1)}
+  .badge .en{color:inherit!important}
+  .now{border-color:var(--teal)}
+  .now-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .big{font-size:26px;letter-spacing:.1em}
+  .mini{font-size:13px;margin-top:8px;color:var(--muted)}
+  .arrow{width:16px;height:16px;fill:var(--zhu);vertical-align:-3px;flex:none}
+  .link{border:0;background:none;color:var(--teal);padding:8px 0 0;font-size:14px}
+
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+  .chip{border-radius:8px;padding:3px 8px;font-size:13.5px;background:var(--hair)}
+  .chip.yi{background:var(--teal-tint)} .chip.ji{background:var(--zhu-tint)}
+
+  .dirs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dir{display:flex;gap:8px;align-items:center;background:var(--paper);border-radius:10px;padding:8px}
+  .dir .arrow{width:26px;height:26px}
+  .facts{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;margin:0;font-size:14px}
+  .facts dt{color:var(--muted);white-space:nowrap}
+  .facts dd{margin:0}
+  body.lang-both .facts dt .en{display:block;margin:0;font-size:11px}
+
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+  .wday{border:1px solid var(--rule);background:var(--paper);border-radius:10px;padding:6px 0;display:flex;flex-direction:column;align-items:center;gap:1px}
+  .wday.sel{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal-tint)}
+  .wday .en{display:none}
+  body.lang-en .wday .en{display:inline}
+  body.lang-en .wday .zh{display:none}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--t3)}
+  .tier5 .dot,.tier5 > i{background:var(--t5)} .tier4 .dot{background:var(--t4)} .tier2 .dot{background:var(--t2)} .tier1 .dot{background:var(--t1)}
+
+  .hour{padding:0;overflow:hidden}
+  .hour summary{list-style:none;display:flex;gap:12px;align-items:center;padding:12px 14px;cursor:pointer}
+  .hour summary::-webkit-details-marker{display:none}
+  .hour.current{border:2px solid var(--teal)}
+  .h-time{font-variant-numeric:tabular-nums;font-size:13px;text-align:center;min-width:42px}
+  .h-main{flex:1;min-width:0}
+  .h-score{font-size:22px;font-weight:700;color:var(--t3)}
+  .h-score.tier5{color:var(--t5)} .h-score.tier4{color:var(--t4)} .h-score.tier2{color:var(--t2)} .h-score.tier1{color:var(--t1)}
+  .h-body{padding:0 14px 14px;border-top:1px solid var(--hair)}
+  .bar{height:6px;border-radius:3px;background:var(--hair);margin-top:6px;overflow:hidden;flex:1}
+  .bar i{display:block;height:100%;background:var(--t3)}
+  .bar.tier5 i{background:var(--t5)} .bar.tier4 i{background:var(--t4)} .bar.tier2 i{background:var(--t2)} .bar.tier1 i{background:var(--t1)}
+
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+  .gh{text-align:center;font-size:12px;color:var(--muted)}
+  .gh .en{display:none} body.lang-en .gh .en{display:inline} body.lang-en .gh .zh{display:none}
+  .cell{border:1px solid var(--hair);background:var(--paper);border-radius:8px;padding:4px 0;display:flex;flex-direction:column;align-items:center;min-height:58px;border-bottom:4px solid var(--t3)}
+  .cell.tier5{border-bottom-color:var(--t5)} .cell.tier4{border-bottom-color:var(--t4)} .cell.tier2{border-bottom-color:var(--t2)} .cell.tier1{border-bottom-color:var(--t1)}
+  .cell.sel{outline:2px solid var(--teal)} .cell.is-today b{color:var(--zhu)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;margin-top:10px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;background:var(--t3)}
+  .legend .tier5 i{background:var(--t5)} .legend .tier4 i{background:var(--t4)} .legend .tier2 i{background:var(--t2)} .legend .tier1 i{background:var(--t1)}
+  .legend .en{display:none} body.lang-en .legend .en{display:inline} body.lang-en .legend .zh{display:none}
+
+  .pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+  .pillar{background:var(--paper);border-radius:10px;padding:8px 2px}
+  .pillar.dm{outline:2px solid var(--teal)}
+  .pillar .char{font-family:var(--cn);font-size:30px;line-height:1.2}
+  .pillar .god{min-height:30px}
+  .pillar .god .en{display:block;margin:0!important;font-size:10px}
+  .hide{font-family:var(--cn);font-size:13px;display:flex;gap:4px;justify-content:center}
+  .unknown{font-size:44px;color:var(--faint);padding:14px 0}
+  .el-Wood{color:var(--wood)} .el-Fire{color:var(--fire)} .el-Earth{color:var(--earth)} .el-Metal{color:var(--metal)} .el-Water{color:var(--water)}
+  .el{font-family:var(--cn);font-weight:600}
+  .el .en{font-family:var(--ui);font-weight:400;font-size:.85em}
+  body.lang-both .el .en{margin:0;color:inherit}
+  .elrow{display:flex;align-items:center;gap:10px;margin:6px 0}
+  .elrow .el{min-width:74px}
+  .el-bg-Wood i{background:var(--wood)} .el-bg-Fire i{background:var(--fire)} .el-bg-Earth i{background:var(--earth)} .el-bg-Metal i{background:var(--metal)} .el-bg-Water i{background:var(--water)}
+  .luck{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .lp{flex:none;width:54px;text-align:center;background:var(--paper);border-radius:10px;padding:6px 0;font-size:20px}
+  .lp.cur{outline:2px solid var(--zhu)}
+  .lp .tiny{font-size:11px}
+
+  .form label{display:block;font-size:13px;color:var(--muted);margin:0 0 10px}
+  .form input:not([type=radio]):not([type=checkbox]){display:block;width:100%;margin-top:4px;padding:10px;border:1px solid var(--rule);border-radius:10px;background:var(--paper);font-size:16px;color:var(--ink)}
+  .form label.check{display:flex;gap:8px;align-items:center;color:var(--ink);font-size:14px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .seg{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:0 0 12px;font-size:14px}
+  .seg > span{width:100%;font-size:13px;color:var(--muted)}
+  .seg label{display:flex;gap:6px;align-items:center;margin:0;color:var(--ink);font-size:14px}
+  .place-sel{background:var(--teal-tint);border-radius:10px;padding:10px;margin-bottom:10px}
+  .plist{display:flex;flex-direction:column;gap:4px;margin:-4px 0 10px}
+  .pitem{text-align:left;border:1px solid var(--rule);background:var(--paper);border-radius:10px;padding:8px 10px}
+  .manual{margin:10px 0;font-size:14px}
+  .manual summary{color:var(--teal);cursor:pointer;margin-bottom:8px}
+  .msg{color:var(--zhu);font-size:14px;min-height:1em;margin:6px 0}
+  .btn{display:inline-block;border:1px solid var(--teal);color:var(--teal);background:transparent;border-radius:22px;padding:9px 16px;text-decoration:none;font-size:14px;cursor:pointer}
+  .btn.primary{background:var(--teal);color:#fff}
+  .btn.primary .en{color:#fff!important;opacity:.85}
+  .btn.small{padding:6px 12px;font-size:13px}
+  .btn.wide{width:100%;margin-top:8px;padding:12px}
+  .btn.danger{border-color:var(--zhu);color:var(--zhu)}
+  .btns{display:flex;flex-wrap:wrap;gap:8px}
+  .prompt{text-align:center}
+  .steps{padding-left:20px;margin:0}
+  .disclaimer{text-align:center;font-size:12px;color:var(--faint);margin:18px 0 0}
+  body.lang-both .disclaimer .en{display:block;margin:0}
+
+  .tabs{position:fixed;bottom:0;left:0;right:0;z-index:5;display:grid;grid-template-columns:repeat(5,1fr);
+    background:var(--card);border-top:1px solid var(--rule);padding:4px 0 calc(4px + env(safe-area-inset-bottom))}
+  .tabs button{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:1px;padding:4px 0;color:var(--muted);font-size:11px}
+  .tabs button b{font-family:var(--cn);font-size:17px;font-weight:600}
+  .tabs button.on{color:var(--teal)}
+  .tabs .en{display:block;margin:0!important;font-size:10px!important;color:inherit!important}
+  body.lang-zh .tabs .en{display:none}
+</style>
+</head>
+<body class="lang-both">
+<header>
+  <h1>八字通胜<small>BaZi Almanac</small></h1>
+  <button id="langBtn" data-act="lang" aria-label="Switch language">双语</button>
+</header>
+<main id="view"><noscript>请开启 JavaScript · Please enable JavaScript.</noscript></main>
+<nav class="tabs">
+  <button data-tab="today"><b>日</b><span class="zh">今日</span><span class="en">Today</span></button>
+  <button data-tab="hours"><b>时</b><span class="zh">时辰</span><span class="en">Hours</span></button>
+  <button data-tab="month"><b>月</b><span class="zh">月历</span><span class="en">Month</span></button>
+  <button data-tab="chart"><b>命</b><span class="zh">命盘</span><span class="en">Chart</span></button>
+  <button data-tab="me"><b>我</b><span class="zh">我的</span><span class="en">Me</span></button>
+</nav>
+<script src="lib/lunar.js"></script>
+<script src="terms.js"></script>
+<script src="cities.js"></script>
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
