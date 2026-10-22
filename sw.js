@@ -1,6 +1,6 @@
 /* Offline cache for the almanac. Bump VERSION whenever any app file changes. */
-var VERSION = 'almanac-v3';
-var FILES = ['./', 'index.html', 'app.js', 'engine.js', 'terms.js', 'cities.js', 'lib/lunar.js',
+var VERSION = 'almanac-v4';
+var FILES = ['./', 'index.html', 'app.js', 'engine.js', 'terms.js', 'readings.js', 'cities.js', 'lib/lunar.js',
   'manifest.webmanifest', 'icon.svg', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', function (e) {

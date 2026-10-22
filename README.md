@@ -5,7 +5,7 @@ A phone-friendly personal almanac (installable web app, works offline) hosted wi
 - **BaZi engine:** free, open-source [lunar-javascript](https://github.com/6tail/lunar-javascript) (MIT), bundled in `lib/`.
 - **Birthplace:** built-in city list (`cities.js`), worldwide search (Open-Meteo geocoding, free, no key), or manual coordinates.
   Historical time zones / daylight saving come from the browser's tz database; day & hour pillars use true solar time.
-- **Readings:** daily and two-hourly (shichen) Yi/Ji, directions, clashes, plus a personal score from the user's chart.
+- **Readings:** daily and two-hourly (shichen) Yi/Ji and directions; personal scores; 10-year luck pillars (大运) side by side with the annual pillar (流年), monthly readings (流月) and a natal chart reading. Texts in `readings.js`.
 - **Bilingual:** 双语 / 中文 / English toggle. Glossary in `terms.js`.
 - **Privacy:** birth data stays in the browser's localStorage.
 

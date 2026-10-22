@@ -18,6 +18,8 @@
   var HE = {'子':'丑','丑':'子','寅':'亥','亥':'寅','卯':'戌','戌':'卯','辰':'酉','酉':'辰','巳':'申','申':'巳','午':'未','未':'午'};
   var HAI = {'子':'未','未':'子','丑':'午','午':'丑','寅':'巳','巳':'寅','卯':'辰','辰':'卯','申':'亥','亥':'申','酉':'戌','戌':'酉'};
   var SANHE = ['申子辰','寅午戌','巳酉丑','亥卯未'];
+  var XING = {'子':'卯','卯':'子','寅':'巳','巳':'申','申':'寅','丑':'戌','戌':'未','未':'丑'};
+  var PO = {'子':'酉','酉':'子','卯':'午','午':'卯','辰':'丑','丑':'辰','未':'戌','戌':'未','寅':'亥','亥':'寅','巳':'申','申':'巳'};
 
   function keyOf(obj, val) { for (var k in obj) if (obj[k] === val) return k; }
   function genBy(el) { return keyOf(GEN, el); }     // resource: the element that feeds el
@@ -125,8 +127,8 @@
     var yun = ecB.getYun(p.gender === 0 ? 0 : 1);
     var luck = yun.getDaYun().filter(function (d) { return d.getGanZhi(); }).slice(0, 8).map(function (d) {
       var gz = d.getGanZhi();
-      return { gz: gz, age: d.getStartAge(), year: d.getStartYear(), ganEl: GAN_EL[gz[0]], zhiEl: ZHI_EL[gz[1]],
-        god: LunarUtil.SHI_SHEN[dayGan + gz[0]] };
+      return { gz: gz, age: d.getStartAge(), year: d.getStartYear(), endYear: d.getEndYear(), ganEl: GAN_EL[gz[0]], zhiEl: ZHI_EL[gz[1]],
+        god: LunarUtil.SHI_SHEN[dayGan + gz[0]], zhiGod: LunarUtil.SHI_SHEN[dayGan + LunarUtil.ZHI_HIDE_GAN[gz[1]][0]] };
     });
 
     var birthLunar = Solar.fromYmdHms(ds[0], ds[1], ds[2], hm[0], hm[1], 0).getLunar();
@@ -198,7 +200,77 @@
     };
   }
 
+  // Score each luck pillar once the chart (favourable elements etc.) is known.
+  function scoreLuck(chart) {
+    chart.luck.forEach(function (d) { d.score = scorePeriod(d.gz[0], d.gz[1], null, chart); });
+    return chart;
+  }
+
+  function luckIndexForYear(chart, y) {
+    for (var i = chart.luck.length - 1; i >= 0; i--) if (y >= chart.luck[i].year) return i;
+    return -1; // before the first luck pillar starts
+  }
+
+  // Natal year branch (zodiac) vs the year's branch.
+  function taiSui(natalZhi, zhi) {
+    var r = [];
+    if (zhi === natalZhi) r.push('值');
+    if (CHONG[zhi] === natalZhi) r.push('冲');
+    if (XING[zhi] === natalZhi || XING[natalZhi] === zhi || (zhi === natalZhi && '辰午酉亥'.indexOf(zhi) >= 0)) r.push('刑');
+    if (HAI[zhi] === natalZhi) r.push('害');
+    if (PO[zhi] === natalZhi) r.push('破');
+    if (HE[zhi] === natalZhi || sanhe(zhi, natalZhi)) r.push('合');
+    return r;
+  }
+
+  var TS_ADJ = { '值': [-6, 'Your zodiac year'], '冲': [-8, 'Clashes with Tai Sui'], '刑': [-4, 'Punishes Tai Sui'],
+    '害': [-3, 'Harms Tai Sui'], '破': [-3, 'Breaks Tai Sui'], '合': [4, 'In harmony with Tai Sui'] };
+
+  function yearReading(y, chart) {
+    var gz = Solar.fromYmd(y, 6, 1).getLunar().getYearInGanZhiByLiChun();
+    var gan = gz[0], zhi = gz[1], extra = [], ts = chart ? taiSui(chart.yearZhi, zhi) : [];
+    ts.forEach(function (k) { extra.push([k + '太岁', TS_ADJ[k][1], TS_ADJ[k][0]]); });
+    var li = chart ? luckIndexForYear(chart, y) : -1, lp = li >= 0 ? chart.luck[li] : null;
+    if (lp) {
+      if (CHONG[zhi] === lp.gz[1]) extra.push(['岁运相冲（流年冲大运）', 'The year clashes with your luck pillar', -6]);
+      else if (HE[zhi] === lp.gz[1]) extra.push(['岁运相合', 'The year harmonises with your luck pillar', 4]);
+      if (gz === lp.gz) extra.push(['岁运并临', 'The year repeats your luck pillar (intensified)', -3]);
+    }
+    return { y: y, gz: gz, gan: gan, zhi: zhi, taiSui: ts, luck: lp, luckIdx: li,
+      god: chart ? LunarUtil.SHI_SHEN[chart.dayGan + gan] : null,
+      zhiGod: chart ? LunarUtil.SHI_SHEN[chart.dayGan + LunarUtil.ZHI_HIDE_GAN[zhi][0]] : null,
+      score: scorePeriod(gan, zhi, null, chart, extra) };
+  }
+
+  // The 12 solar months of a BaZi year (寅 month, starting at 立春, to 丑 month).
+  function monthReadings(y, chart) {
+    var out = [];
+    for (var k = 0; k < 12; k++) {
+      var dt = new Date(y, 1 + k, 20);
+      var lu = Solar.fromYmd(dt.getFullYear(), dt.getMonth() + 1, dt.getDate()).getLunar();
+      var gz = lu.getMonthInGanZhiExact(), jie = lu.getPrevJie(), st = jie.getSolar();
+      out.push({ gz: gz, gan: gz[0], zhi: gz[1], jie: jie.getName(), start: { y: st.getYear(), m: st.getMonth(), d: st.getDay() },
+        god: chart ? LunarUtil.SHI_SHEN[chart.dayGan + gz[0]] : null,
+        score: scorePeriod(gz[0], gz[1], null, chart) });
+    }
+    return out;
+  }
+
+  // Ten-god counts across the visible stems and main hidden stems (Day Master excluded).
+  function godCounts(chart) {
+    var n = {};
+    chart.pillars.forEach(function (pl, i) {
+      if (!pl) return;
+      if (i !== 2) n[pl.ganGod] = (n[pl.ganGod] || 0) + 1;
+      var g = pl.hide[0] && pl.hide[0].god;
+      if (g) n[g] = (n[g] || 0) + (i === 1 ? 1.5 : 1);
+    });
+    return Object.keys(n).sort(function (a, b) { return n[b] - n[a]; }).map(function (k) { return [k, n[k]]; });
+  }
+
   root.ENG = {
+    scoreLuck: scoreLuck, luckIndexForYear: luckIndexForYear, taiSui: taiSui, yearReading: yearReading,
+    monthReadings: monthReadings, godCounts: godCounts, HIDE: LunarUtil.ZHI_HIDE_GAN,
     GAN_EL: GAN_EL, ZHI_EL: ZHI_EL, ZHI_ANIMAL: ZHI_ANIMAL, ELEMENTS: ELEMENTS, GEN: GEN, CTRL: CTRL,
     tzOffset: tzOffset, localToUtc: localToUtc, equationOfTime: equationOfTime,
     computeChart: computeChart, dayReading: dayReading, scorePeriod: scorePeriod
